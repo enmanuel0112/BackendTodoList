@@ -1,23 +1,63 @@
 import { Request, Response } from "express";
 import { User } from "../entity/User";
 
-export const createUser = async (req: Request, res: Response) => {
 
-  const { userName, email, password } = req.body;
+export const registerUser = async (req: Request, res: Response) => {
+  try {
+    const { userName, email, password } = req.body;
 
-  const user = new User();
-  user.userName = userName;
-  user.email = email;
-  user.password = password;
+    const existingUser = await User.findOneBy({ email });
+    if (existingUser) {
+      return res.status(400).json({ error: 'User with this email already exists' });
+    }
+    if (userName.length < 3) {
+      return res.status(400).json({ error: 'Username must be at least 3 characters long' });
+    }
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'Password must be at least 8 characters long' });
+    }
 
-  await user.save()
-    .then(() => console.log('done'))
-    .catch((error) => console.error('Error creating user:', error));
+    const user = new User();
+    user.userName = userName;
+    user.email = email;
+    user.password = password;
 
-  console.log('User created:', user);
-  res.json(user);
+    await user.save()
+
+    res.status(201).json({ message: 'User created successfully', user });
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
 
 }
+
+
+export const userLogin = async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOneBy({ email });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    const isPasswordValid = await user.comparePassword(password);
+    if (!isPasswordValid) {
+      res.status(401).json({ error: 'Invalid password' });
+    }
+
+    res.json({ message: 'Login successful', user });
+
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Error logging in user:', error.message);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  }
+
+}
+
 
 export const getUsers = async (req: Request, res: Response) => {
 

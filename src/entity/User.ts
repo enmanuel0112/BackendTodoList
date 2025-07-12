@@ -6,10 +6,13 @@ import {
   UpdateDateColumn,
   BaseEntity,
   OneToMany,
+  BeforeInsert,
+  BeforeUpdate,
 
 } from 'typeorm';
 
 import { Task } from './Task';
+import bcrypt from 'bcryptjs';
 
 @Entity()
 export class User extends BaseEntity {
@@ -19,7 +22,7 @@ export class User extends BaseEntity {
   @Column()
   userName!: string
 
-  @Column()
+  @Column({ unique: true })
   email!: string
 
   @Column({
@@ -34,4 +37,27 @@ export class User extends BaseEntity {
 
   @OneToMany(() => Task, (task) => task.user)
   tasks!: Task[]
+
+
+
+  @BeforeInsert()
+  async hasPassword() {
+    {
+      if (this.password) {
+        this.password = await bcrypt.hash(this.password, 10);
+      }
+    }
+  }
+  @BeforeUpdate()
+  async hasPasswordOnUpdate() {
+    const existingUser = await User.findOneBy({ use_id: this.use_id });
+    if (existingUser && this.password !== existingUser.password) {
+      this.password = await bcrypt.hash(this.password, 10);
+    }
+  }
+
+  async comparePassword(password: string): Promise<boolean> {
+    return await bcrypt.compare(password, this.password);
+  }
 }
+
