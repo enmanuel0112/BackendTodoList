@@ -2,19 +2,20 @@ import { Request, Response } from "express";
 import { User } from "../entity/User";
 
 
+
 export const registerUser = async (req: Request, res: Response) => {
   try {
     const { userName, email, password } = req.body;
 
     const existingUser = await User.findOneBy({ email });
+
+    const sanitizeUser = (user: User) => {
+      const {
+        password, ...userWithoutPassword } = user;
+      return userWithoutPassword
+    }
     if (existingUser) {
       return res.status(400).json({ error: 'User with this email already exists' });
-    }
-    if (userName.length < 3) {
-      return res.status(400).json({ error: 'Username must be at least 3 characters long' });
-    }
-    if (password.length < 8) {
-      return res.status(400).json({ error: 'Password must be at least 8 characters long' });
     }
 
     const user = new User();
@@ -24,7 +25,11 @@ export const registerUser = async (req: Request, res: Response) => {
 
     await user.save()
 
-    res.status(201).json({ message: 'User created successfully', user });
+    res.status(201).json({
+      message: 'User created successfully',
+      user: sanitizeUser(user)
+    });
+
   } catch (error) {
     if (error instanceof Error) {
       res.status(500).json({ error: 'Internal server error' });
@@ -33,11 +38,17 @@ export const registerUser = async (req: Request, res: Response) => {
 
 }
 
-
 export const userLogin = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOneBy({ email });
+    const user = await User.findOne({
+      where: { email },
+      relations: ["tasks"]
+    });
+    const sanitizeUser = (user: User) => {
+      const { password, ...userWithoutPassword } = user;
+      return userWithoutPassword
+    }
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
@@ -47,7 +58,11 @@ export const userLogin = async (req: Request, res: Response) => {
       res.status(401).json({ error: 'Invalid password' });
     }
 
-    res.json({ message: 'Login successful', user });
+    res.json({
+      message: 'Login successful',
+      boolean: true,
+      user: sanitizeUser(user),
+    });
 
   } catch (error) {
     if (error instanceof Error) {
@@ -57,7 +72,6 @@ export const userLogin = async (req: Request, res: Response) => {
   }
 
 }
-
 
 export const getUsers = async (req: Request, res: Response) => {
 

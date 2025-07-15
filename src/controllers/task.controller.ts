@@ -12,13 +12,24 @@ export const createTask = async (req: Request, res: Response) => {
       res.status(404).json({ error: 'User not found' });
       return
     }
+
+    const sanitizeUser = (user_id: User) => {
+      const { password, ...userWithoutPassword } = user_id;
+      return userWithoutPassword
+    }
     const task = new Task();
     task.content = content;
     task.isCompleted = isCompleted;
     task.user = user_id;
 
     await task.save()
-    res.json(task);
+    res.json({
+      message: 'Task created successfully',
+      task: {
+        ...task,
+        user: sanitizeUser(user_id)
+      }
+    });
 
   } catch (error) {
     if (error instanceof Error) {
