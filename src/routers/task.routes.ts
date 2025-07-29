@@ -7,4 +7,4 @@ router.get("/task", getTasks);
 router.put("/task/:task_id", updateTask);
 router.delete("/task/:task_id", deleteTask)
 
-export default router;
+export default router; 

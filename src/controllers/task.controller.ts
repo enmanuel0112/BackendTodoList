@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
-import { AppDataSource } from "../data-sources";
+import { application, Request, Response } from "express";
+import { AppDataSource } from "../config/data-sources";
 import { Task } from "../entity/Task";
 import { User } from "../entity/User";
 
@@ -7,7 +7,7 @@ export const createTask = async (req: Request, res: Response) => {
 
   try {
     const { content, isCompleted, useId } = req.body;
-    const user_id = await AppDataSource.getRepository(User).findOneBy({ use_id: useId });
+    const user_id = await AppDataSource.getRepository(User).findOneBy({ id: useId });
     if (!user_id) {
       res.status(404).json({ error: 'User not found' });
       return
@@ -44,7 +44,7 @@ export const createTask = async (req: Request, res: Response) => {
 
 export const getTasks = async (req: Request, res: Response) => {
   try {
-    const tasks = await Task.find();
+    const tasks = await AppDataSource.getRepository(Task).find();
     res.json(tasks);
   } catch (error) {
     if (error instanceof Error) {
@@ -56,9 +56,9 @@ export const getTasks = async (req: Request, res: Response) => {
 
 export const updateTask = async (req: Request, res: Response) => {
   const { content, isCompleted, useId } = req.body;
-  const user_id = await AppDataSource.getRepository(User).findOneBy({ use_id: useId });
+  const user_id = await AppDataSource.getRepository(User).findOneBy({ id: useId });
   try {
-    const task = await Task.findOneBy({ task_id: parseInt(req.params.task_id) });
+    const task = await AppDataSource.getRepository(Task).findOneBy({ task_id: parseInt(req.params.task_id) });
 
     if (!task) {
       res.status(404).json({ error: 'Task not found' });
@@ -87,7 +87,7 @@ export const updateTask = async (req: Request, res: Response) => {
 export const deleteTask = async (req: Request, res: Response) => {
   try {
     const { task_id } = req.params;
-    const result = await Task.delete({ task_id: parseInt(task_id) });
+    const result = await AppDataSource.getRepository(Task).delete({ task_id: parseInt(task_id) });
     if (result.affected === 0) {
       res.status(404).json({ error: 'Task not found' });
     }

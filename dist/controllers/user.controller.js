@@ -40,7 +40,7 @@ exports.getUsers = getUsers;
 const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { userName, email, password } = req.body;
-        const user = yield User_1.User.findOneBy({ use_id: parseInt(req.params.use_id) });
+        const user = yield User_1.User.findOneBy({ id: parseInt(req.params.id) });
         console.log('User found:', user);
         if (!user) {
             res.status(404).json({ error: 'User not found' });
@@ -62,8 +62,8 @@ const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
 exports.updateUser = updateUser;
 const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { use_id } = req.params;
-        const result = yield User_1.User.delete({ use_id: parseInt(use_id) });
+        const { id } = req.params;
+        const result = yield User_1.User.delete({ id: parseInt(id) });
         if (result.affected === 0) {
             res.status(404).json({ error: 'User not found' });
         }

@@ -17,7 +17,7 @@ import bcrypt from 'bcryptjs';
 @Entity()
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
-  use_id!: number
+  id!: number
 
   @Column()
   userName!: string
@@ -50,7 +50,7 @@ export class User extends BaseEntity {
   }
   @BeforeUpdate()
   async hasPasswordOnUpdate() {
-    const existingUser = await User.findOneBy({ use_id: this.use_id });
+    const existingUser = await User.findOneBy({ id: this.id });
     if (existingUser && this.password !== existingUser.password) {
       this.password = await bcrypt.hash(this.password, 10);
     }

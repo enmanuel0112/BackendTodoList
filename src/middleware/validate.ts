@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { SimpleConsoleLogger } from "typeorm";
 import { ZodSchema } from "zod";
 
 export const validate = (schema: ZodSchema) => (
@@ -8,11 +9,14 @@ export const validate = (schema: ZodSchema) => (
 ) => {
 
   const result = schema.safeParse(req.body);
+  console.log('Validation result:', result); // Debugging line to check validation result
   if (!result.success) {
-    return res.status(400).json({
+    res.status(400).json({
       error: "Validation error",
       issues: result.error.issues,
+
     });
+    return
   }
 
   req.body = result.data;

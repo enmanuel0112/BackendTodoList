@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import { AppDataSource } from '../config/data-sources';
 import { User } from "../entity/User";
 
 
@@ -15,7 +16,8 @@ export const registerUser = async (req: Request, res: Response) => {
       return userWithoutPassword
     }
     if (existingUser) {
-      return res.status(400).json({ error: 'User with this email already exists' });
+      res.status(400).json({ error: 'User with this email already exists' });
+      return
     }
 
     const user = new User();
@@ -38,45 +40,10 @@ export const registerUser = async (req: Request, res: Response) => {
 
 }
 
-export const userLogin = async (req: Request, res: Response) => {
-  try {
-    const { email, password } = req.body;
-    const user = await User.findOne({
-      where: { email },
-      relations: ["tasks"]
-    });
-    const sanitizeUser = (user: User) => {
-      const { password, ...userWithoutPassword } = user;
-      return userWithoutPassword
-    }
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-    const isPasswordValid = await user.comparePassword(password);
-    if (!isPasswordValid) {
-      res.status(401).json({ error: 'Invalid password' });
-    }
-
-    res.json({
-      message: 'Login successful',
-      boolean: true,
-      user: sanitizeUser(user),
-    });
-
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error('Error logging in user:', error.message);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  }
-
-}
-
 export const getUsers = async (req: Request, res: Response) => {
 
   try {
-    const users = await User.find();
+    const users = await AppDataSource.getRepository(User).find();
     res.json(users);
   } catch (error) {
     if (error instanceof Error) {
@@ -90,7 +57,7 @@ export const getUsers = async (req: Request, res: Response) => {
 export const updateUser = async (req: Request, res: Response) => {
   try {
     const { userName, email, password } = req.body;
-    const user = await User.findOneBy({ use_id: parseInt(req.params.use_id) });
+    const user = await AppDataSource.getRepository(User).findOneBy({ id: parseInt(req.params.id) });
     console.log('User found:', user);
 
     if (!user) {
@@ -117,8 +84,8 @@ export const updateUser = async (req: Request, res: Response) => {
 
 export const deleteUser = async (req: Request, res: Response) => {
   try {
-    const { use_id } = req.params;
-    const result = await User.delete({ use_id: parseInt(use_id) });
+    const { id } = req.params;
+    const result = await AppDataSource.getRepository(User).delete({ id: parseInt(id) });
     if (result.affected === 0) {
       res.status(404).json({ error: 'User not found' });
 

@@ -16,7 +16,7 @@ const User_1 = require("../entity/User");
 const createTask = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { content, isCompleted, useId } = req.body;
-        const user_id = yield data_sources_1.AppDataSource.getRepository(User_1.User).findOneBy({ use_id: useId });
+        const user_id = yield data_sources_1.AppDataSource.getRepository(User_1.User).findOneBy({ id: useId });
         if (!user_id) {
             res.status(404).json({ error: 'User not found' });
             return;
@@ -52,7 +52,7 @@ const getTasks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
 exports.getTasks = getTasks;
 const updateTask = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { content, isCompleted, useId } = req.body;
-    const user_id = yield data_sources_1.AppDataSource.getRepository(User_1.User).findOneBy({ use_id: useId });
+    const user_id = yield data_sources_1.AppDataSource.getRepository(User_1.User).findOneBy({ id: useId });
     try {
         const task = yield Task_1.Task.findOneBy({ task_id: parseInt(req.params.task_id) });
         if (!task) {
