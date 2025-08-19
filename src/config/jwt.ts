@@ -1,8 +1,11 @@
 import { Secret } from "jsonwebtoken";
+import {env} from './env';
 
 
 export const jwtConfig = {
-  secret: '8aa7c3839bb6145b33194f4ebabe19659952dc60996ce569428907c5d090b003d5b602d3f7fead03117d97c204912e217d0520f302ace0760dd13ec919483af7',
-
+  accessTttl: '1d',
+  refreshTttl: '30d',
+  accessSecret: env.JWT_ACCESS_SECRET ,
+  refreshSecret: env.JWT_REFRESH_SECRET ,
 }
 

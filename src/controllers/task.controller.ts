@@ -6,9 +6,11 @@ import { User } from "../entity/User";
 export const createTask = async (req: Request, res: Response) => {
 
   try {
-    const { content, isCompleted, useId } = req.body;
-    const user_id = await AppDataSource.getRepository(User).findOneBy({ id: useId });
-    if (!user_id) {
+    const userId = Number(req.user!.id);
+    const { content, isCompleted = false } = req.body ;
+
+    const user = await AppDataSource.getRepository(User).findOneBy({ id: userId });
+    if (!user) {
       res.status(404).json({ error: 'User not found' });
       return
     }
@@ -20,14 +22,14 @@ export const createTask = async (req: Request, res: Response) => {
     const task = new Task();
     task.content = content;
     task.isCompleted = isCompleted;
-    task.user = user_id;
+    task.user = user;
 
     await task.save()
     res.json({
       message: 'Task created successfully',
       task: {
         ...task,
-        user: sanitizeUser(user_id)
+       user: sanitizeUser(user)
       }
     });
 
@@ -44,7 +46,11 @@ export const createTask = async (req: Request, res: Response) => {
 
 export const getTasks = async (req: Request, res: Response) => {
   try {
-    const tasks = await AppDataSource.getRepository(Task).find();
+   const userId = (req as any).user.id ;
+   const tasks = await AppDataSource.getRepository(Task).find({
+      where: {user: { id: userId}},
+      order: { createdAt: 'DESC' },
+    });
     res.json(tasks);
   } catch (error) {
     if (error instanceof Error) {
@@ -55,27 +61,35 @@ export const getTasks = async (req: Request, res: Response) => {
 }
 
 export const updateTask = async (req: Request, res: Response) => {
-  const { content, isCompleted, useId } = req.body;
-  const user_id = await AppDataSource.getRepository(User).findOneBy({ id: useId });
+  const userId = Number(req.user!.id);
+  const { content, isCompleted} = req.body;
+
   try {
-    const task = await AppDataSource.getRepository(Task).findOneBy({ task_id: parseInt(req.params.task_id) });
+    const task = await AppDataSource.getRepository(Task).findOneBy({
+       task_id: parseInt(req.params.task_id),
+        user: { id: userId }
+      });
 
     if (!task) {
       res.status(404).json({ error: 'Task not found' });
       return;
     }
 
-    if (!user_id) {
+    if (!userId) {
       res.status(404).json({ error: 'Task not found' });
       return;
     }
-
+    
     task.content = content;
     task.isCompleted = isCompleted;
-    task.user = user_id;
+
     await task.save();
 
-    res.json(task);
+    res.json(
+    {
+      task,
+      user: userId
+    });
   } catch (error) {
     if (error instanceof Error) {
       console.error('Error fetching task by ID:', error.message);

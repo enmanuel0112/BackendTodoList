@@ -40,23 +40,23 @@ export const registerUser = async (req: Request, res: Response) => {
 
 }
 
-export const getUsers = async (req: Request, res: Response) => {
+// export const getUsers = async (_req: Request, res: Response) => {
 
-  try {
-    const users = await AppDataSource.getRepository(User).find();
-    res.json(users);
-  } catch (error) {
-    if (error instanceof Error) {
-      console.error('Error fetching users:', error.message);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  }
+//   try {
+//     const users = await AppDataSource.getRepository(User).find();
+//     res.json(users);
+//   } catch (error) {
+//     if (error instanceof Error) {
+//       console.error('Error fetching users:', error.message);
+//       res.status(500).json({ error: 'Internal server error' });
+//     }
+//   }
 
-}
+// }
 
 export const updateUser = async (req: Request, res: Response) => {
   try {
-    const { userName, email, password } = req.body;
+    const { userName, email } = req.body;
     const user = await AppDataSource.getRepository(User).findOneBy({ id: parseInt(req.params.id) });
     console.log('User found:', user);
 
@@ -66,14 +66,27 @@ export const updateUser = async (req: Request, res: Response) => {
       return
     }
 
+    if(userName){
+      user.userName = userName;
+    }
 
-    user.userName = userName;
+    if(email){
     user.email = email;
-    user.password = password;
+    }
 
     await user.save()
 
-    res.json(user);
+     const sanitizeUser = (user: User) => {
+      const {
+        password, ...userWithoutPassword } = user;
+      return userWithoutPassword
+    }
+
+    res.json({
+      message: 'User updated successfully',
+      user: sanitizeUser(user)
+
+    });
   } catch (error) {
     if (error instanceof Error) {
       console.error('Error fetching user by ID:', error.message);
@@ -90,7 +103,7 @@ export const deleteUser = async (req: Request, res: Response) => {
       res.status(404).json({ error: 'User not found' });
 
     }
-
+  res.status(204).json({ message: 'User deleted successfully' });
   } catch (error) {
     if (error instanceof Error) {
       console.error('Error deleting user:', error.message);
