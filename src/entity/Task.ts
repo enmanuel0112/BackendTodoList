@@ -14,7 +14,7 @@ import { User } from './User';
 export class Task extends BaseEntity {
 
   @PrimaryGeneratedColumn()
-  task_id!: number
+  taskId!: number
 
   @Column({
     length: 255,

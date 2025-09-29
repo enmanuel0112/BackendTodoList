@@ -3,12 +3,12 @@ import { AppDataSource } from '../config/data-sources';
 import { User } from "../entity/User";
 import { signAccessToke, signRefreshToken } from "../utils/generateJwt";
 import jwt from 'jsonwebtoken';
+
 export const userLogin = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
     const user = await AppDataSource.getRepository(User).findOne({
       where: { email },
-      // relations: ["tasks"]
     });
     const sanitizeUser = (user: User) => {
       const { password, ...userWithoutPassword } = user;
@@ -33,14 +33,12 @@ export const userLogin = async (req: Request, res: Response) => {
        path: "/"
     });
     res.json({
-      message: 'Login successful',
-      boolean: true,
-      user: sanitizeUser(user),
+      message: 'Login successful',  
+      userInfo: sanitizeUser(user),
     });
 
   } catch (error) {
     if (error instanceof Error) {
-      console.error('Error logging in user:', error.message);
       res.status(500).json({ error: 'Internal server error' });
     }
   }

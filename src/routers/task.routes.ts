@@ -7,7 +7,7 @@ const router = Router();
 
 router.post("/task", authMiddleware, validate(createTaskSchema), createTask);
 router.get("/task/me", authMiddleware, getTasks);
-router.put("/task/update/:task_id",authMiddleware, validate( updateTaskSchema), updateTask) ;
-router.delete("/task/delete/:task_id",authMiddleware, deleteTask)
+router.put("/task/update/:taskId",authMiddleware, validate( updateTaskSchema), updateTask) ;
+router.delete("/task/delete/:taskId",authMiddleware, deleteTask)
 
 export default router; 
