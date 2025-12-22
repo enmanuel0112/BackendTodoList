@@ -18,7 +18,7 @@ exports.Task = Task;
 __decorate([
     (0, typeorm_1.PrimaryGeneratedColumn)(),
     __metadata("design:type", Number)
-], Task.prototype, "task_id", void 0);
+], Task.prototype, "taskId", void 0);
 __decorate([
     (0, typeorm_1.Column)({
         length: 255,

@@ -14,7 +14,8 @@ app.use(cors({
     credentials: true,
 }));
 
-app.use('/api/', UserRoutes);
-app.use('/api/', TaskRoutes);
+app.use('/api/user', UserRoutes);
+app.use('/api/task', TaskRoutes);
+
 
 export default app;

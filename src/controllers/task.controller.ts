@@ -62,7 +62,7 @@ export const getTasks = async (req: Request, res: Response) => {
   }
 };
 
-export const updateTask = async (req: Request, res: Response) => {
+export const editTask = async (req: Request, res: Response) => {
   const userId = Number(req.user!.id);
   const { content, isCompleted } = req.body;
 
@@ -97,8 +97,6 @@ export const updateTask = async (req: Request, res: Response) => {
       task,
       user: userId,
     });
-
-    console.log(task);
   } catch (error) {
     if (error instanceof Error) {
       console.error("Error fetching task by ID:", error.message);
@@ -116,9 +114,9 @@ export const deleteTask = async (req: Request, res: Response) => {
     if (result.affected === 0) {
       res.status(404).json({ error: "Task not found" });
     }
-   res.json({
-    message: 'Task Deleted'
-   })
+    res.json({
+      message: "Task Deleted",
+    });
   } catch (error) {
     if (error instanceof Error) {
       console.error("Error deleting task:", error.message);

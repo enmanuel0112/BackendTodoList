@@ -8,70 +8,72 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUser = exports.updateUser = exports.getUsers = exports.createUser = void 0;
-const User_1 = require("../entity/User");
-const createUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { userName, email, password } = req.body;
-    const user = new User_1.User();
-    user.userName = userName;
-    user.email = email;
-    user.password = password;
-    yield user.save()
-        .then(() => console.log('done'))
-        .catch((error) => console.error('Error creating user:', error));
-    console.log('User created:', user);
-    res.json(user);
-});
-exports.createUser = createUser;
-const getUsers = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    try {
-        const users = yield User_1.User.find();
-        res.json(users);
-    }
-    catch (error) {
-        if (error instanceof Error) {
-            console.error('Error fetching users:', error.message);
-            res.status(500).json({ error: 'Internal server error' });
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
         }
-    }
-});
-exports.getUsers = getUsers;
+    return t;
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.deleteUser = exports.updateUser = void 0;
+const data_sources_1 = require("../config/data-sources");
+const User_1 = require("../entity/User");
 const updateUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { userName, email, password } = req.body;
-        const user = yield User_1.User.findOneBy({ id: parseInt(req.params.id) });
-        console.log('User found:', user);
+        const { userName, email } = req.body;
+        const userId = req.user.id;
+        const user = yield data_sources_1.AppDataSource.getRepository(User_1.User).findOneBy({
+            id: userId,
+        });
+        console.log("User found:", user);
         if (!user) {
-            res.status(404).json({ error: 'User not found' });
+            res.status(404).json({ error: "User not found" });
             return;
         }
-        user.userName = userName;
-        user.email = email;
-        user.password = password;
+        if (userName) {
+            user.userName = userName;
+        }
+        if (email) {
+            user.email = email;
+        }
         yield user.save();
-        res.json(user);
+        const sanitizeUser = (user) => {
+            const { password } = user, userWithoutPassword = __rest(user, ["password"]);
+            return userWithoutPassword;
+        };
+        res.json({
+            message: "User updated successfully",
+            user: sanitizeUser(user),
+        });
     }
     catch (error) {
         if (error instanceof Error) {
-            console.error('Error fetching user by ID:', error.message);
-            res.status(500).json({ error: 'Internal server error' });
+            console.error("Error fetching user by ID:", error.message);
+            res.status(500).json({ error: "Internal server error" });
         }
     }
 });
 exports.updateUser = updateUser;
 const deleteUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { id } = req.params;
-        const result = yield User_1.User.delete({ id: parseInt(id) });
+        const userId = req.user.id;
+        const result = yield data_sources_1.AppDataSource.getRepository(User_1.User).delete({
+            id: userId,
+        });
         if (result.affected === 0) {
-            res.status(404).json({ error: 'User not found' });
+            res.status(404).json({ error: "User not found" });
         }
+        res.status(204).json({ message: "User deleted successfully" });
     }
     catch (error) {
         if (error instanceof Error) {
-            console.error('Error deleting user:', error.message);
-            res.status(500).json({ error: 'Internal server error' });
+            console.error("Error deleting user:", error.message);
+            res.status(500).json({ error: "Internal server error" });
         }
     }
 });

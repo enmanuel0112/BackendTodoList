@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { registerUser, updateUser, deleteUser, getMe } from "../controllers/user.controller";
-import { userLogin } from "../controllers/auth.controller";
+import { updateUser, deleteUser } from "../controllers/user.controller";
+import { userLogin, registerUser, profile } from "../controllers/auth.controller";
 import { validate } from "../middleware/validate";
 import { authMiddleware } from "../middleware/auth.middleware";
 import { registerUserSchema, loginUserSchema } from "../dtos/registerUser.dto";
@@ -8,9 +8,9 @@ const router = Router();
 
 router.post("/register", validate(registerUserSchema), registerUser);
 router.post("/login", validate(loginUserSchema),  userLogin);
-router.get("/me", authMiddleware, getMe);
-router.put("/users/update/:id",  authMiddleware, updateUser);
-router.delete("/users/delete/:id", authMiddleware, deleteUser);
+router.get("/profile", authMiddleware, profile);
+router.put("/",  authMiddleware, updateUser);
+router.delete("/", authMiddleware, deleteUser);
 
 
 export default router;

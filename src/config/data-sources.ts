@@ -1,13 +1,16 @@
 import { DataSource } from 'typeorm';
 import { Task } from '../entity/Task';
 import { User } from '../entity/User';
+import {env} from './env';
+
+
 export const AppDataSource = new DataSource({
   type: "postgres",
-  host: "localhost",
-  port: 5432,
-  username: "Cesar",
-  password: "8294440426Marisol12",
-  database: "TodoList",
+  host: env.HOST,
+  port: env.PORT,
+  username: env.USERNAME,
+  password: env.PASSWORD,
+  database: env.DATABASE,
   entities: [Task, User],
   logging: true,
   synchronize: true,
