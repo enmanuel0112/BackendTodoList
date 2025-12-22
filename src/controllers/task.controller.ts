@@ -50,11 +50,34 @@ export const createTask = async (req: Request, res: Response) => {
 export const getTasks = async (req: Request, res: Response) => {
   try {
     const userId = (req as any).user.id;
-    const tasks = await AppDataSource.getRepository(Task).find({
-      where: { user: { id: userId } },
-      order: { createdAt: "DESC" },
-    });
-    res.json(tasks);
+    const pages = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = (pages - ) * limit; 
+    const tasks = await AppDataSource.getRepository(Task)
+    
+    .createQueryBuilder("task")
+    .where("task.userId = :userId", { userId })
+    .orderBy("task.createdAt", "ASC")
+    .leftJoinAndSelect("task.user", "user")
+    .skip(skip)
+    .take(limit);
+      
+      const [data, total] = await tasks.getManyAndCount();
+
+      const filterData = data.map((task) =>{
+        const {password, createdAt, updatedAt, ...userWithoutPassword} = task.user;
+
+        return {
+          ...task,
+          user: userWithoutPassword
+        }
+      });
+    res.status(200).json({ 
+      data: filterData,
+      total,
+      pages,
+      totalPages: Math.ceil(total / limit),
+     });
   } catch (error) {
     if (error instanceof Error) {
       res.status(500).json({ error: "Internal server error" });
