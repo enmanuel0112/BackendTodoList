@@ -1,14 +1,13 @@
-import {z} from "zod";
-
+import { z } from "zod";
 
 export const createTaskSchema = z.object({
-    content: z.string().min(10, { message: "Content is required" }),
-    isCompleted: z.boolean().default(false),
+  content: z.string().min(10, { message: "Content is required" }),
+  isCompleted: z.boolean().default(false),
 });
 
 export const updateTaskSchema = z.object({
-    content: z.string().min(10, { message: "min 10 caracters" }).optional(),
-    isCompleted: z.boolean().optional(),
+  content: z.string().min(10, { message: "min 10 caracters" }).optional(),
+  isCompleted: z.boolean().optional(),
 });
 export type UpdateTaskDto = z.infer<typeof updateTaskSchema>;
 

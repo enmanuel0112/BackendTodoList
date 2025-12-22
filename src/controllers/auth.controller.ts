@@ -97,3 +97,17 @@ export const profile = async (_req: Request, res: Response) => {
     }
   }
 };
+
+export const logout = async (_req: Request, res: Response) => {
+  try {
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    });
+    res.json({ message: "Logout successful" });
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+};

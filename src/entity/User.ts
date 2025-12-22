@@ -8,37 +8,34 @@ import {
   OneToMany,
   BeforeInsert,
   BeforeUpdate,
+} from "typeorm";
 
-} from 'typeorm';
-
-import { Task } from './Task';
-import bcrypt from 'bcryptjs';
+import { Task } from "./Task";
+import bcrypt from "bcryptjs";
 
 @Entity()
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
-  id!: number
+  id!: number;
 
   @Column()
-  userName!: string
+  userName!: string;
 
   @Column({ unique: true })
-  email!: string
+  email!: string;
 
   @Column({
     length: 255,
   })
-  password!: string
+  password!: string;
 
   @CreateDateColumn()
-  createdAt!: Date
+  createdAt!: Date;
 
-  @UpdateDateColumn() updatedAt!: Date
+  @UpdateDateColumn() updatedAt!: Date;
 
   @OneToMany(() => Task, (task) => task.user)
-  tasks!: Task[]
-
-
+  tasks!: Task[];
 
   @BeforeInsert()
   async hasPassword() {
@@ -60,4 +57,3 @@ export class User extends BaseEntity {
     return await bcrypt.compare(password, this.password);
   }
 }
-

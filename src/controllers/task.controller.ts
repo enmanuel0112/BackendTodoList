@@ -52,32 +52,33 @@ export const getTasks = async (req: Request, res: Response) => {
     const userId = (req as any).user.id;
     const pages = parseInt(req.query.page as string) || 1;
     const limit = parseInt(req.query.limit as string) || 10;
-    const skip = (pages - ) * limit; 
+    const skip = (pages - 1) * limit;
     const tasks = await AppDataSource.getRepository(Task)
-    
-    .createQueryBuilder("task")
-    .where("task.userId = :userId", { userId })
-    .orderBy("task.createdAt", "ASC")
-    .leftJoinAndSelect("task.user", "user")
-    .skip(skip)
-    .take(limit);
-      
-      const [data, total] = await tasks.getManyAndCount();
 
-      const filterData = data.map((task) =>{
-        const {password, createdAt, updatedAt, ...userWithoutPassword} = task.user;
+      .createQueryBuilder("task")
+      .where("task.userId = :userId", { userId })
+      .orderBy("task.createdAt", "ASC")
+      .leftJoinAndSelect("task.user", "user")
+      .skip(skip)
+      .take(limit);
 
-        return {
-          ...task,
-          user: userWithoutPassword
-        }
-      });
-    res.status(200).json({ 
+    const [data, total] = await tasks.getManyAndCount();
+
+    const filterData = data.map((task) => {
+      const { password, createdAt, updatedAt, ...userWithoutPassword } =
+        task.user;
+
+      return {
+        ...task,
+        user: userWithoutPassword,
+      };
+    });
+    res.status(200).json({
       data: filterData,
       total,
       pages,
       totalPages: Math.ceil(total / limit),
-     });
+    });
   } catch (error) {
     if (error instanceof Error) {
       res.status(500).json({ error: "Internal server error" });

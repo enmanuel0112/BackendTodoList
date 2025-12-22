@@ -1,28 +1,28 @@
-import jwt, { Secret } from 'jsonwebtoken';
-import { jwtConfig } from '../config/jwt';
-import { randomUUID } from 'crypto';
+import jwt, { Secret } from "jsonwebtoken";
+import { jwtConfig } from "../config/jwt";
+import { randomUUID } from "crypto";
 
-export const signAccessToke = (payload: object) : String  => {
+export const signAccessToke = (payload: object): String => {
   return jwt.sign(
-    payload, 
+    payload,
     jwtConfig.accessSecret as Secret,
-     {expiresIn: jwtConfig.accessTttl,
+    {
+      expiresIn: jwtConfig.accessTttl,
       jwtid: randomUUID(),
-      algorithm: 'HS256'
-     } as jwt.SignOptions
-);
+      algorithm: "HS256",
+    } as jwt.SignOptions
+  );
 };
 
 export const signRefreshToken = (payload: object): string => {
   return jwt.sign(
-    payload, 
+    payload,
     jwtConfig.refreshSecret,
-    
-     {
-      expiresIn: jwtConfig.refreshTttl, 
+
+    {
+      expiresIn: jwtConfig.refreshTttl,
       jwtid: randomUUID(),
-       algorithm: 'HS256'
-     } as jwt.SignOptions & { secret: Secret },
-    
-);
-}
+      algorithm: "HS256",
+    } as jwt.SignOptions & { secret: Secret }
+  );
+};

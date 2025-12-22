@@ -6,31 +6,28 @@ import {
   UpdateDateColumn,
   BaseEntity,
   ManyToOne,
-
-} from 'typeorm';
-import { User } from './User';
+} from "typeorm";
+import { User } from "./User";
 
 @Entity()
 export class Task extends BaseEntity {
-
   @PrimaryGeneratedColumn()
-  taskId!: number
+  taskId!: number;
 
   @Column({
     length: 255,
   })
-  content!: string
+  content!: string;
 
   @CreateDateColumn()
-  createdAt!: Date
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt!: Date
+  updatedAt!: Date;
 
   @Column()
-  isCompleted!: boolean
+  isCompleted!: boolean;
 
-  @ManyToOne(() => User, (user) => user.tasks, { onDelete: 'CASCADE' })
-  user!: User
-
+  @ManyToOne(() => User, (user) => user.tasks, { onDelete: "CASCADE" })
+  user!: User;
 }

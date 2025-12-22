@@ -1,8 +1,7 @@
-import { DataSource } from 'typeorm';
-import { Task } from '../entity/Task';
-import { User } from '../entity/User';
-import {env} from './env';
-
+import { DataSource } from "typeorm";
+import { Task } from "../entity/Task";
+import { User } from "../entity/User";
+import { env } from "./env";
 
 export const AppDataSource = new DataSource({
   type: "postgres",
@@ -14,4 +13,4 @@ export const AppDataSource = new DataSource({
   entities: [Task, User],
   logging: true,
   synchronize: true,
-})
+});
