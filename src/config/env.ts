@@ -9,6 +9,7 @@ const must = (v: string | undefined, name: string) => {
 };
 
 export const env = {
+  TYPE: must(process.env.TYPE, "TYPE"),
   JWT_ACCESS_SECRET: must(process.env.JWT_ACCESS_SECRET, "JWT_ACCESS_SECRET"),
   JWT_REFRESH_SECRET: must(
     process.env.JWT_REFRESH_ACCESS_SECRET ??

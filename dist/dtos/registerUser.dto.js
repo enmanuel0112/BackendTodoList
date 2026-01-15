@@ -36,15 +36,21 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.loginUserSchema = exports.registerUserSchema = void 0;
 const z = __importStar(require("zod"));
 exports.registerUserSchema = z.object({
-    userName: z.string().min(3, { message: "Username must be at least 3 characters long" }),
+    userName: z
+        .string()
+        .min(3, { message: "Username must be at least 3 characters long" }),
     email: z.string().email({ message: "Invalid email address" }),
-    password: z.string()
+    password: z
+        .string()
         .min(8, { message: "Password must be at least 8 characters long" })
-        .regex(/[A-Z]/, { message: "Password must contain at least one uppercase letter" })
-        .regex(/[^A-Za-z0-9]/, { message: "Password must contain at least one special character" }),
+        .regex(/[A-Z]/, {
+        message: "Password must contain at least one uppercase letter",
+    })
+        .regex(/[^A-Za-z0-9]/, {
+        message: "Password must contain at least one special character",
+    }),
 });
 exports.loginUserSchema = z.object({
     email: z.string().email({ message: "Invalid email address" }),
-    password: z.string()
-        .min(8, { message: "Password is required" })
+    password: z.string().min(8, { message: "Password is required" }),
 });

@@ -11,7 +11,7 @@ export const createTask = async (req: Request, res: Response) => {
     const user = await AppDataSource.getRepository(User).findOneBy({
       id: userId,
     });
-    console.log(user);
+
     if (!user) {
       res.status(404).json({ error: "User not found" });
       return;

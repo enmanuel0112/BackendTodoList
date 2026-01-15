@@ -14,6 +14,12 @@ const must = (v, name) => {
     return v.trim();
 };
 exports.env = {
+    TYPE: must(process.env.TYPE, "TYPE"),
     JWT_ACCESS_SECRET: must(process.env.JWT_ACCESS_SECRET, "JWT_ACCESS_SECRET"),
     JWT_REFRESH_SECRET: must((_a = process.env.JWT_REFRESH_ACCESS_SECRET) !== null && _a !== void 0 ? _a : process.env.JWT_REFRESH_ACESS_SECRET, "JWT_REFRESH_ACCESS_SECRET (o JWT_REFRESH_ACESS_SECRET)"),
+    HOST: must(process.env.HOST, "HOST"),
+    PORT: parseInt(must(process.env.PORT, "PORT")),
+    USERNAME: must(process.env.DB_USERNAME, "USERNAME"),
+    PASSWORD: must(process.env.DB_PASSWORD, "PASSWORD"),
+    DATABASE: must(process.env.DB_DATABASE, "DATABASE"),
 };

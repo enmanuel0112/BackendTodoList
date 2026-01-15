@@ -20,7 +20,7 @@ var __rest = (this && this.__rest) || function (s, e) {
     return t;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.profile = exports.userLogin = exports.registerUser = void 0;
+exports.logout = exports.profile = exports.userLogin = exports.registerUser = void 0;
 const data_sources_1 = require("../config/data-sources");
 const User_1 = require("../entity/User");
 const generateJwt_1 = require("../utils/generateJwt");
@@ -112,3 +112,18 @@ const profile = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.profile = profile;
+const logout = (_req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        res.clearCookie("jwt", {
+            httpOnly: true,
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+        });
+        res.json({ message: "Logout successful" });
+    }
+    catch (error) {
+        if (error instanceof Error) {
+            res.status(500).json({ error: "Internal server error" });
+        }
+    }
+});
+exports.logout = logout;

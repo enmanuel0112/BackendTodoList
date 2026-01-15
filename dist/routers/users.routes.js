@@ -11,5 +11,6 @@ router.post("/register", (0, validate_1.validate)(registerUser_dto_1.registerUse
 router.post("/login", (0, validate_1.validate)(registerUser_dto_1.loginUserSchema), auth_controller_1.userLogin);
 router.get("/profile", auth_middleware_1.authMiddleware, auth_controller_1.profile);
 router.put("/", auth_middleware_1.authMiddleware, user_controller_1.updateUser);
+router.post("/logout", auth_middleware_1.authMiddleware, auth_controller_1.logout);
 router.delete("/", auth_middleware_1.authMiddleware, user_controller_1.deleteUser);
 exports.default = router;

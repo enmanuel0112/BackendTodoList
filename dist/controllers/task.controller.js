@@ -31,7 +31,6 @@ const createTask = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         const user = yield data_sources_1.AppDataSource.getRepository(User_1.User).findOneBy({
             id: userId,
         });
-        console.log(user);
         if (!user) {
             res.status(404).json({ error: "User not found" });
             return;
@@ -66,11 +65,27 @@ exports.createTask = createTask;
 const getTasks = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const userId = req.user.id;
-        const tasks = yield data_sources_1.AppDataSource.getRepository(Task_1.Task).find({
-            where: { user: { id: userId } },
-            order: { createdAt: "DESC" },
+        const pages = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (pages - 1) * limit;
+        const tasks = yield data_sources_1.AppDataSource.getRepository(Task_1.Task)
+            .createQueryBuilder("task")
+            .where("task.userId = :userId", { userId })
+            .orderBy("task.createdAt", "ASC")
+            .leftJoinAndSelect("task.user", "user")
+            .skip(skip)
+            .take(limit);
+        const [data, total] = yield tasks.getManyAndCount();
+        const filterData = data.map((task) => {
+            const _a = task.user, { password, createdAt, updatedAt } = _a, userWithoutPassword = __rest(_a, ["password", "createdAt", "updatedAt"]);
+            return Object.assign(Object.assign({}, task), { user: userWithoutPassword });
         });
-        res.json(tasks);
+        res.status(200).json({
+            data: filterData,
+            total,
+            pages,
+            totalPages: Math.ceil(total / limit),
+        });
     }
     catch (error) {
         if (error instanceof Error) {

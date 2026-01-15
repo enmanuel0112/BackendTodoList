@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const createTaskSchema = z.object({
-  content: z.string().min(10, { message: "Content is required" }),
+  content: z.string().min(10, { message: "min 10 caracters" }),
   isCompleted: z.boolean().default(false),
 });
 

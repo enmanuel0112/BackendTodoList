@@ -7,7 +7,7 @@ const validate_1 = require("../middleware/validate");
 const verifyTask_1 = require("../dtos/verifyTask");
 const router = (0, express_1.Router)();
 router.post("/", auth_middleware_1.authMiddleware, (0, validate_1.validate)(verifyTask_1.createTaskSchema), task_controller_1.createTask);
-router.get("/me", auth_middleware_1.authMiddleware, task_controller_1.getTasks);
+router.get("/", auth_middleware_1.authMiddleware, task_controller_1.getTasks);
 router.put("/:taskId", auth_middleware_1.authMiddleware, (0, validate_1.validate)(verifyTask_1.updateTaskSchema), task_controller_1.editTask);
 router.delete("/:taskId", auth_middleware_1.authMiddleware, task_controller_1.deleteTask);
 exports.default = router;

@@ -38,7 +38,7 @@ __decorate([
     __metadata("design:type", Boolean)
 ], Task.prototype, "isCompleted", void 0);
 __decorate([
-    (0, typeorm_1.ManyToOne)(() => User_1.User, (user) => user.tasks, { onDelete: 'CASCADE' }),
+    (0, typeorm_1.ManyToOne)(() => User_1.User, (user) => user.tasks, { onDelete: "CASCADE" }),
     __metadata("design:type", User_1.User)
 ], Task.prototype, "user", void 0);
 exports.Task = Task = __decorate([

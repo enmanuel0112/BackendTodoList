@@ -11,7 +11,7 @@ import { createTaskSchema, updateTaskSchema } from "../dtos/verifyTask";
 const router = Router();
 
 router.post("/", authMiddleware, validate(createTaskSchema), createTask);
-router.get("/me", authMiddleware, getTasks);
+router.get("/", authMiddleware, getTasks);
 router.put("/:taskId", authMiddleware, validate(updateTaskSchema), editTask);
 router.delete("/:taskId", authMiddleware, deleteTask);
 
